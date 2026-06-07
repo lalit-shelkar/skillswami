@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PayoutMode {
+  PER_KILL
+  BY_RANKING
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PAID
+  REJECTED
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  phone        String?
+  ffUsername   String?
+  ffUid        String?
+  balance      Int         @default(0)
+  role         Role        @default(USER)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  poolEntries  PoolEntry[]
+  payments     Payment[]
+  withdrawals  Withdrawal[]
+}
+
+model Tournament {
+  id                  String      @id @default(cuid())
+  title               String
+  mode                String      @default("BR Match Solo (Skill On)")
+  entryFee            Int
+  startTime           DateTime
+  maxPlayers          Int         @default(50)
+  roomId              String?
+  roomPassword        String?
+  payoutMode          PayoutMode?
+  perKillReward       Int         @default(0)
+  rankRewards         String?
+  scorecardPublished  Boolean     @default(false)
+  winningsPaid        Boolean     @default(false)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+  entries             PoolEntry[]
+}
+
+model PoolEntry {
+  id             String     @id @default(cuid())
+  userId         String
+  tournamentId   String
+  ffUsername     String
+  ffUid          String
+  kills          Int        @default(0)
+  rank           Int?
+  winningAmount  Int        @default(0)
+  joinedAt       DateTime   @default(now())
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tournament     Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tournamentId])
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  orderId          String        @unique
+  userId           String
+  amountInr        Float
+  coins            Int
+  status           PaymentStatus @default(PENDING)
+  paymentSessionId String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  user             User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Withdrawal {
+  id                String           @id @default(cuid())
+  userId            String
+  coins             Int
+  amountInr         Float
+  upiId             String
+  status            WithdrawalStatus @default(PENDING)
+  transferReference String?
+  adminNote         String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
