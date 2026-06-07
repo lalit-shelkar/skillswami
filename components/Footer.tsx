@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="border-t border-surface-border bg-surface-card">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid gap-10 md:grid-cols-3">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div>
             <div className="flex items-center gap-2.5">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-700">
@@ -35,6 +35,30 @@ export default function Footer() {
               <li>
                 <Link href="/about" className="text-sm text-gray-400 transition hover:text-brand-400">
                   About
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="text-sm text-gray-400 transition hover:text-brand-400">
+                  Contact Us
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold text-white">Legal</h4>
+            <ul className="mt-4 space-y-2.5">
+              <li>
+                <Link href="/terms" className="text-sm text-gray-400 transition hover:text-brand-400">
+                  Terms &amp; Conditions
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/refund-policy"
+                  className="text-sm text-gray-400 transition hover:text-brand-400"
+                >
+                  Refund Policy
                 </Link>
               </li>
             </ul>
